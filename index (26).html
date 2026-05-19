@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>G;SALON — Premium Hair & Color Studio, Prague</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Bebas+Neue&display=swap');
+
+  :root {
+    --black: #080808;
+    --deep: #0d0d0d;
+    --charcoal: #141414;
+    --silver: #b8b8b8;
+    --platinum: #e8e8e8;
+    --rose: #e8a4b0;
+    --rose-dim: #c4768a;
+    --neon-rose: #ff4f80;
+    --gold: #c9a96e;
+    --white: #f5f5f5;
+    --glass: rgba(255,255,255,0.04);
+    --glass-border: rgba(255,255,255,0.08);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    overflow-x: hidden;
+    scroll-behavior: auto;
+    background: var(--black);
+  }
+
+  body {
+    background: var(--black);
+    color: var(--platinum);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── CANVAS ── */
+  #canvas-container {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  #grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 72px;
+    background: rgba(8,8,8,0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 6px;
+    color: var(--platinum);
+    text-decoration: none;
+    position: relative;
+  }
+  .nav-logo span {
+    color: var(--neon-rose);
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .lang-switcher {
+    display: flex;
+    gap: 4px;
+  }
+  .lang-btn {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--silver);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    border-radius: 2px;
+  }
+  .lang-btn.active, .lang-btn:hover {
+    border-color: var(--glass-border);
+    color: var(--platinum);
+    background: var(--glass);
+  }
+
+  .nav-book {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--platinum);
+    border: none;
+    padding: 10px 22px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .nav-book:hover { background: var(--rose); }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-size: 10px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--rose-dim);
+    margin-bottom: 28px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 1.2s ease 0.4s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(64px, 9vw, 130px);
+    font-weight: 300;
+    line-height: 0.92;
+    letter-spacing: -2px;
+    color: var(--platinum);
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 1.4s ease 0.7s forwards;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  .hero-sub {
+    margin-top: 32px;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--silver);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 1.2s ease 1s forwards;
+  }
+
+  .hero-scroll-hint {
+    position: absolute;
+    bottom: 44px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    animation: fadeUp 1s ease 1.6s forwards;
+  }
+  .hero-scroll-hint span {
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--silver);
+  }
+  .scroll-line {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(to bottom, var(--rose-dim), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%,100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.2); }
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── MARQUEE ── */
+  .marquee-track {
+    overflow: hidden;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 18px 0;
+    background: rgba(8,8,8,0.9);
+    position: relative;
+    z-index: 20;
+  }
+  .marquee-inner {
+    display: flex;
+    gap: 64px;
+    width: max-content;
+    animation: marquee 22s linear infinite;
+  }
+  .marquee-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 5px;
+    color: var(--silver);
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    white-space: nowrap;
+  }
+  .marquee-dot {
+    width: 4px; height: 4px;
+    background: var(--neon-rose);
+    border-radius: 50%;
+    display: inline-block;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── DATA PULSE SIGNALS ── */
+  #pulse-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .pulse-signal {
+    position: absolute;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--neon-rose);
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0;
+  }
+
+  /* ── SERVICES ── */
+  #services {
+    min-height: 100vh;
+    padding: 120px 48px;
+    position: relative;
+  }
+
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--rose-dim);
+    margin-bottom: 16px;
+  }
+
+  .section-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(40px, 5vw, 72px);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--platinum);
+    margin-bottom: 64px;
+  }
+  .section-heading em {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  /* ── BENTO GRID ── */
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: auto;
+    gap: 12px;
+  }
+
+  .bento-card {
+    background: var(--charcoal);
+    border: 1px solid var(--glass-border);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+    transition: border-color 0.4s ease;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .bento-card:hover { border-color: rgba(255,255,255,0.15); }
+
+  .bento-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(232,164,176,0.08) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .bento-card:hover::before { opacity: 1; }
+
+  .bento-card.span-8 { grid-column: span 8; }
+  .bento-card.span-4 { grid-column: span 4; }
+  .bento-card.span-6 { grid-column: span 6; }
+  .bento-card.span-12 { grid-column: span 12; }
+
+  .bento-num {
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--rose-dim);
+    margin-bottom: 40px;
+    text-transform: uppercase;
+  }
+
+  .bento-icon {
+    width: 48px; height: 48px;
+    margin-bottom: 28px;
+    opacity: 0.7;
+  }
+
+  .bento-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--platinum);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+
+  .bento-desc {
+    font-size: 11px;
+    line-height: 1.9;
+    color: var(--silver);
+    filter: blur(6px);
+    transition: filter 0.6s ease;
+  }
+  .bento-card:hover .bento-desc { filter: blur(0); }
+
+  .bento-price {
+    margin-top: 32px;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .bento-tag {
+    position: absolute;
+    top: 32px; right: 32px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--silver);
+    text-transform: uppercase;
+    border: 1px solid var(--glass-border);
+    padding: 4px 10px;
+  }
+
+  /* diagonal accent line */
+  .bento-diag {
+    position: absolute;
+    bottom: -20px; right: -20px;
+    width: 120px; height: 1px;
+    background: var(--neon-rose);
+    transform: rotate(-45deg);
+    opacity: 0.2;
+  }
+
+  /* ── SPECIALISTS ── */
+  #specialists {
+    padding: 140px 48px;
+    position: relative;
+  }
+
+  .specialists-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 64px;
+  }
+
+  .specialist-card {
+    border: 1px solid var(--glass-border);
+    padding: 40px 36px;
+    background: var(--charcoal);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.4s ease;
+  }
+  .specialist-card:hover { border-color: rgba(232,164,176,0.25); }
+
+  .specialist-avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    margin-bottom: 28px;
+    overflow: hidden;
+    background: var(--deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    color: var(--rose);
+  }
+
+  .specialist-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 400;
+    color: var(--platinum);
+    margin-bottom: 6px;
+  }
+
+  .specialist-role {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--rose-dim);
+    margin-bottom: 24px;
+  }
+
+  .specialist-bio {
+    font-size: 11px;
+    line-height: 1.9;
+    color: var(--silver);
+    margin-bottom: 28px;
+  }
+
+  .specialist-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .skill-tag {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--silver);
+    border: 1px solid var(--glass-border);
+    padding: 5px 10px;
+  }
+
+  /* ── MAP SECTION ── */
+  #location {
+    padding: 140px 48px;
+    position: relative;
+  }
+
+  .location-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    margin-top: 64px;
+    align-items: start;
+  }
+
+  .map-wrapper {
+    position: relative;
+    height: 460px;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    filter: grayscale(100%) invert(1) hue-rotate(180deg) brightness(0.8) contrast(1.2);
+  }
+  .map-wrapper iframe {
+    width: 100%; height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .location-info {
+    padding: 16px 0;
+  }
+
+  .location-address {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1.3;
+    color: var(--platinum);
+    margin-bottom: 40px;
+  }
+
+  .location-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .detail-row {
+    display: flex;
+    gap: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .detail-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--rose-dim);
+    width: 100px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .detail-val {
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--silver);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 20;
+    padding: 80px 48px 48px;
+    border-top: 1px solid var(--glass-border);
+    background: var(--black);
+  }
+
+  .footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 64px;
+  }
+
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 8px;
+    color: var(--platinum);
+    line-height: 1;
+  }
+  .footer-logo span { color: var(--neon-rose); }
+
+  .footer-tagline {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--silver);
+    margin-top: 12px;
+    text-transform: uppercase;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 64px;
+  }
+  .footer-col h4 {
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--rose-dim);
+    margin-bottom: 20px;
+  }
+  .footer-col a {
+    display: block;
+    font-size: 12px;
+    color: var(--silver);
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: color 0.3s ease;
+  }
+  .footer-col a:hover { color: var(--platinum); }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 32px;
+    border-top: 1px solid var(--glass-border);
+  }
+  .footer-copy {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #555;
+    text-transform: uppercase;
+  }
+  .footer-social {
+    display: flex;
+    gap: 24px;
+  }
+  .footer-social a {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--silver);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+  .footer-social a:hover { color: var(--rose); }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--glass-border), transparent);
+    margin: 0 48px;
+  }
+
+  /* ── SCROLLTRIGGER PINNED wrapper ── */
+  #services-pinned {
+    position: relative;
+    z-index: 15;
+  }
+
+  /* ── INTRO OVERLAY ── */
+  #intro-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--black);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .intro-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px;
+    letter-spacing: 10px;
+    color: var(--silver);
+    text-transform: uppercase;
+    animation: introFade 2.2s ease forwards;
+  }
+  @keyframes introFade {
+    0% { opacity: 0; }
+    30% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    nav { padding: 0 24px; }
+    .bento-card.span-8, .bento-card.span-4, .bento-card.span-6 { grid-column: span 12; }
+    .specialists-grid { grid-template-columns: 1fr; }
+    .location-grid { grid-template-columns: 1fr; }
+    .footer-top { flex-direction: column; gap: 48px; }
+    .footer-links { flex-direction: column; gap: 32px; }
+    #hero { padding: 0 24px; }
+    #services, #specialists, #location { padding-left: 24px; padding-right: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- INTRO OVERLAY -->
+<div id="intro-overlay">
+  <div class="intro-text" data-key="loading">Loading G;Salon</div>
+</div>
+
+<!-- GRAIN -->
+<div id="grain"></div>
+
+<!-- PULSE SIGNALS -->
+<div id="pulse-container"></div>
+
+<!-- CANVAS -->
+<div id="canvas-container"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">G<span>;</span>SALON</a>
+  <div class="nav-right">
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="cz">CZ</button>
+      <button class="lang-btn" data-lang="ru">RU</button>
+    </div>
+    <button class="nav-book" data-key="book">Book Now</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow" data-key="hero_eyebrow">Prague · Premium Hair & Color Studio</div>
+  <h1 class="hero-title">
+    <em data-key="hero_title_1">Craft</em><br>
+    <span data-key="hero_title_2">Your Signature</span><br>
+    <em data-key="hero_title_3">Look</em>
+  </h1>
+  <p class="hero-sub" data-key="hero_sub">Plzeňská 535/50, Prague 5</p>
+  <div class="hero-scroll-hint">
+    <span data-key="scroll">Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-track">
+  <div class="marquee-inner" id="marquee-inner"></div>
+</div>
+
+<!-- SERVICES -->
+<section id="services-pinned">
+  <section id="services">
+    <div class="section-label" data-key="services_label">Our Services</div>
+    <h2 class="section-heading">
+      <em data-key="services_title_1">Precision</em><br>
+      <span data-key="services_title_2">& Artistry</span>
+    </h2>
+
+    <div class="bento-grid" id="bento-grid">
+
+      <!-- Card 1: Hero service -->
+      <div class="bento-card span-8" data-tilt>
+        <div class="bento-num">01 — <span data-key="s1_label">Signature Styling</span></div>
+        <svg class="bento-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" color="#c4768a">
+          <path d="M8 40 C12 20 36 28 40 8" stroke-linecap="round"/>
+          <circle cx="8" cy="40" r="3"/>
+          <circle cx="40" cy="8" r="3"/>
+          <path d="M16 32 C20 24 28 24 32 16" stroke-linecap="round" opacity="0.5"/>
+        </svg>
+        <div class="bento-tag" data-key="s1_tag">Signature</div>
+        <h3 class="bento-title" data-key="s1_title">Premium Hair<br>Styling & Cuts</h3>
+        <p class="bento-desc" data-key="s1_desc">Every cut begins with an in-depth consultation to understand your lifestyle, bone structure, and hair texture. Our master stylists apply precision cutting techniques — from razor-sharp bobs and lived-in layers to architectural blunt cuts — sculpting each strand with intentional artistry. The result is a silhouette uniquely yours: movement, balance, and personality in perfect harmony.</p>
+        <div class="bento-price" data-key="s1_price">From 1,200 CZK · ~50 min</div>
+        <div class="bento-diag"></div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="bento-card span-4" data-tilt>
+        <div class="bento-num">02 — <span data-key="s2_label">Color</span></div>
+        <svg class="bento-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" color="#c4768a">
+          <circle cx="24" cy="24" r="16"/>
+          <path d="M24 8 C32 16 32 32 24 40" opacity="0.6"/>
+          <path d="M24 8 C16 16 16 32 24 40" opacity="0.3"/>
+        </svg>
+        <h3 class="bento-title" data-key="s2_title">Technical<br>Coloring</h3>
+        <p class="bento-desc" data-key="s2_desc">Balayage, highlights, full-coverage color, and glossing treatments executed with European precision. We use only professional-grade pigments to achieve luminous, long-lasting results.</p>
+        <div class="bento-price" data-key="s2_price">From 2,400 CZK</div>
+        <div class="bento-diag"></div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="bento-card span-4" data-tilt>
+        <div class="bento-num">03 — <span data-key="s3_label">Balayage</span></div>
+        <svg class="bento-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" color="#c4768a">
+          <path d="M10 38 L24 10 L38 38" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 28 L32 28" stroke-linecap="round"/>
+        </svg>
+        <h3 class="bento-title" data-key="s3_title">Balayage<br>& Highlights</h3>
+        <p class="bento-desc" data-key="s3_desc">Hand-painted sun-kissed dimension with seamless grow-out. A completely personalized approach — no two balayage looks are the same.</p>
+        <div class="bento-price" data-key="s3_price">From 3,200 CZK</div>
+        <div class="bento-diag"></div>
+      </div>
+
+      <!-- Card 4: Wide -->
+      <div class="bento-card span-8" data-tilt>
+        <div class="bento-num">04 — <span data-key="s4_label">Therapeutics</span></div>
+        <svg class="bento-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" color="#c4768a">
+          <path d="M24 6 C14 14 8 22 10 32 C12 40 20 44 24 44 C28 44 36 40 38 32 C40 22 34 14 24 6Z"/>
+          <path d="M24 16 C20 20 18 26 20 32" opacity="0.5"/>
+        </svg>
+        <h3 class="bento-title" data-key="s4_title">Advanced Hair & Scalp<br>Therapeutics</h3>
+        <p class="bento-desc" data-key="s4_desc">Restore your hair's vitality with our clinical-level treatment protocols. Beginning with a detailed scalp analysis using digital trichoscopy, we identify your specific needs — whether thinning, dryness, damage, or sensitivity. Treatments include Kerastase Chronologiste, Olaplex bond restoration, and customized scalp microbiome rebalancing. Experience visible transformation from root to tip in a single session, with ongoing programs designed for lasting structural resilience.</p>
+        <div class="bento-price" data-key="s4_price">From 1,800 CZK · ~75 min</div>
+        <div class="bento-diag"></div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="bento-card span-6" data-tilt>
+        <div class="bento-num">05 — <span data-key="s5_label">Keratin</span></div>
+        <svg class="bento-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" color="#c4768a">
+          <rect x="8" y="8" width="32" height="32" rx="2"/>
+          <path d="M16 24 L32 24M24 16 L24 32" opacity="0.6"/>
+        </svg>
+        <h3 class="bento-title" data-key="s5_title">Keratin &<br>Smoothing</h3>
+        <p class="bento-desc" data-key="s5_desc">Brazilian, Japanese, and custom keratin treatments for enduring smoothness and shine. Frizz-free results lasting 3–6 months with our professional-grade formulas.</p>
+        <div class="bento-price" data-key="s5_price">From 4,500 CZK</div>
+        <div class="bento-diag"></div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="bento-card span-6" data-tilt>
+        <div class="bento-num">06 — <span data-key="s6_label">Consultation</span></div>
+        <svg class="bento-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1" color="#c4768a">
+          <path d="M12 12 L36 12 L36 30 L24 30 L18 38 L18 30 L12 30 Z"/>
+        </svg>
+        <h3 class="bento-title" data-key="s6_title">Expert<br>Consultation</h3>
+        <p class="bento-desc" data-key="s6_desc">A complimentary 30-minute session with our senior stylist to map your hair transformation journey. We discuss history, goals, maintenance expectations, and budget.</p>
+        <div class="bento-price" data-key="s6_price">Complimentary</div>
+        <div class="bento-diag"></div>
+      </div>
+
+    </div>
+  </section>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SPECIALISTS -->
+<section id="specialists">
+  <div class="section-label" data-key="spec_label">Meet The Team</div>
+  <h2 class="section-heading">
+    <em data-key="spec_title_1">Masters</em><br>
+    <span data-key="spec_title_2">of the Craft</span>
+  </h2>
+
+  <div class="specialists-grid">
+
+    <div class="specialist-card">
+      <div class="specialist-avatar">A</div>
+      <div class="specialist-name" data-key="sp1_name">Alena Kovářová</div>
+      <div class="specialist-role" data-key="sp1_role">Founder · Master Colorist</div>
+      <p class="specialist-bio" data-key="sp1_bio">With over 14 years of experience across Prague, Paris, and London, Alena founded G;Salon with a singular vision: to bring European editorial color standards to Prague. Certified in Balayage by L'Oréal Professionnel Paris and a Kerastase Master Educator, she specializes in complex color corrections and bespoke blonding techniques. Her work has been featured in Vogue CS and Harper's Bazaar CZ.</p>
+      <div class="specialist-skills">
+        <span class="skill-tag" data-key="sk_balayage">Balayage</span>
+        <span class="skill-tag" data-key="sk_blonde">Blonding</span>
+        <span class="skill-tag" data-key="sk_correction">Color Correction</span>
+        <span class="skill-tag" data-key="sk_olaplex">Olaplex</span>
+      </div>
+    </div>
+
+    <div class="specialist-card">
+      <div class="specialist-avatar">M</div>
+      <div class="specialist-name" data-key="sp2_name">Martin Šedivý</div>
+      <div class="specialist-role" data-key="sp2_role">Senior Stylist · Texture Specialist</div>
+      <p class="specialist-bio" data-key="sp2_bio">Martin's approach to cutting is architectural — he believes every great haircut is a structural solution. Trained at the Vidal Sassoon Academy in London and a two-time finalist at the Czech Hairdressing Awards, he works primarily with curly, coily, and textured hair, bringing out each client's natural pattern with precision dry-cutting techniques and curl-specific shaping methods.</p>
+      <div class="specialist-skills">
+        <span class="skill-tag" data-key="sk_texture">Texture Cutting</span>
+        <span class="skill-tag" data-key="sk_curly">Curly Hair</span>
+        <span class="skill-tag" data-key="sk_sass">Sassoon Method</span>
+        <span class="skill-tag" data-key="sk_dry">Dry Cutting</span>
+      </div>
+    </div>
+
+    <div class="specialist-card">
+      <div class="specialist-avatar">V</div>
+      <div class="specialist-name" data-key="sp3_name">Veronika Blahová</div>
+      <div class="specialist-role" data-key="sp3_role">Trichologist · Treatment Expert</div>
+      <p class="specialist-bio" data-key="sp3_bio">Veronika bridges the gap between clinical hair science and luxury salon care. A certified trichologist with a background in dermatology nursing, she developed G;Salon's exclusive scalp diagnostic protocol. Her treatment plans combine medical-grade scalp analysis with professional-grade restorative therapies — from stem-cell activating serums to bond-multiplying reconstruction — achieving measurable results for clients experiencing hair loss, breakage, or chronic dryness.</p>
+      <div class="specialist-skills">
+        <span class="skill-tag" data-key="sk_trich">Trichology</span>
+        <span class="skill-tag" data-key="sk_scalp">Scalp Analysis</span>
+        <span class="skill-tag" data-key="sk_kera">Keratin Tx</span>
+        <span class="skill-tag" data-key="sk_loss">Hair Loss</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- LOCATION -->
+<section id="location">
+  <div class="section-label" data-key="loc_label">Find Us</div>
+  <h2 class="section-heading">
+    <em data-key="loc_title_1">Plzeňská</em><br>
+    <span data-key="loc_title_2">535/50, Prague 5</span>
+  </h2>
+
+  <div class="location-grid">
+    <div class="map-wrapper">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2560.98!2d14.3908!3d50.0722!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470b94f3c5b5b5c5%3A0x1234567890abcdef!2sPl%C5%BEe%C5%88sk%C3%A1+535%2F50%2C+150+00+Praha+5!5e0!3m2!1sen!2scz!4v1700000000000"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+
+    <div class="location-info">
+      <div class="location-address" data-key="loc_address">Plzeňská 535/50<br>Smíchov, Prague 5<br>150 00</div>
+      <div class="location-detail">
+        <div class="detail-row">
+          <div class="detail-label" data-key="loc_hours_label">Hours</div>
+          <div class="detail-val" data-key="loc_hours">Mon–Fri: 9:00 – 20:00<br>Saturday: 9:00 – 18:00<br>Sunday: By appointment</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label" data-key="loc_phone_label">Phone</div>
+          <div class="detail-val">+420 776 123 456</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label" data-key="loc_email_label">Email</div>
+          <div class="detail-val">hello@gsalon.cz</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-label" data-key="loc_transit_label">Transit</div>
+          <div class="detail-val" data-key="loc_transit">Tram 4, 7, 9 → Plzeňská stop<br>Metro B → Anděl (8 min walk)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">G<span>;</span>SALON</div>
+      <div class="footer-tagline" data-key="footer_tagline">Premium Hair & Color Studio · Prague</div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4 data-key="footer_services">Services</h4>
+        <a href="#" data-key="f_styling">Hair Styling</a>
+        <a href="#" data-key="f_color">Coloring & Balayage</a>
+        <a href="#" data-key="f_treat">Treatments</a>
+        <a href="#" data-key="f_keratin">Keratin</a>
+      </div>
+      <div class="footer-col">
+        <h4 data-key="footer_studio">Studio</h4>
+        <a href="#" data-key="f_team">Our Team</a>
+        <a href="#" data-key="f_philosophy">Philosophy</a>
+        <a href="#" data-key="f_contact">Contact</a>
+        <a href="#" data-key="f_book2">Book Online</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy" data-key="footer_copy">© 2024 G;Salon Prague. All rights reserved.</div>
+    <div class="footer-social">
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+      <a href="#">Google</a>
+    </div>
+  </div>
+</footer>
+
+<!-- THREE.JS r128 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<script>
+// ════════════════════════════════════════════
+// LANGUAGE DICTIONARY
+// ════════════════════════════════════════════
+const dict = {
+  en: {
+    loading: 'Loading G;Salon',
+    book: 'Book Now',
+    hero_eyebrow: 'Prague · Premium Hair & Color Studio',
+    hero_title_1: 'Craft', hero_title_2: 'Your Signature', hero_title_3: 'Look',
+    hero_sub: 'Plzeňská 535/50, Prague 5',
+    scroll: 'Scroll',
+    services_label: 'Our Services',
+    services_title_1: 'Precision', services_title_2: '& Artistry',
+    s1_label:'Signature Styling', s1_tag:'Signature', s1_title:'Premium Hair\nStyling & Cuts',
+    s1_desc:'Every cut begins with an in-depth consultation to understand your lifestyle, bone structure, and hair texture. Our master stylists apply precision cutting techniques — from razor-sharp bobs and lived-in layers to architectural blunt cuts — sculpting each strand with intentional artistry.',
+    s1_price:'From 1,200 CZK · ~50 min',
+    s2_label:'Color', s2_title:'Technical\nColoring',
+    s2_desc:'Balayage, highlights, full-coverage color, and glossing treatments executed with European precision using professional-grade pigments.',
+    s2_price:'From 2,400 CZK',
+    s3_label:'Balayage', s3_title:'Balayage\n& Highlights',
+    s3_desc:'Hand-painted sun-kissed dimension with seamless grow-out. Completely personalized — no two looks are the same.',
+    s3_price:'From 3,200 CZK',
+    s4_label:'Therapeutics', s4_title:'Advanced Hair & Scalp\nTherapeutics',
+    s4_desc:'Restore vitality with clinical-level protocols. Digital trichoscopy, Kerastase Chronologiste, Olaplex bond restoration, and scalp microbiome rebalancing for lasting structural resilience.',
+    s4_price:'From 1,800 CZK · ~75 min',
+    s5_label:'Keratin', s5_title:'Keratin &\nSmoothing',
+    s5_desc:'Brazilian, Japanese, and custom keratin treatments for enduring smoothness and shine. Results lasting 3–6 months.',
+    s5_price:'From 4,500 CZK',
+    s6_label:'Consultation', s6_title:'Expert\nConsultation',
+    s6_desc:'A complimentary 30-minute session mapping your transformation journey. Goals, history, maintenance, and budget.',
+    s6_price:'Complimentary',
+    spec_label:'Meet The Team', spec_title_1:'Masters', spec_title_2:'of the Craft',
+    sp1_name:'Alena Kovářová', sp1_role:'Founder · Master Colorist',
+    sp1_bio:'With over 14 years across Prague, Paris, and London, Alena founded G;Salon to bring European editorial color standards to Prague. Certified by L\'Oréal Professionnel Paris and a Kerastase Master Educator, she specializes in complex color corrections and bespoke blonding.',
+    sp2_name:'Martin Šedivý', sp2_role:'Senior Stylist · Texture Specialist',
+    sp2_bio:'Martin\'s approach to cutting is architectural. Trained at the Vidal Sassoon Academy in London and a two-time Czech Hairdressing Awards finalist, he works with curly and textured hair using precision dry-cutting and curl-specific shaping.',
+    sp3_name:'Veronika Blahová', sp3_role:'Trichologist · Treatment Expert',
+    sp3_bio:'Veronika bridges clinical hair science and luxury care. A certified trichologist with a dermatology background, she developed G;Salon\'s exclusive scalp diagnostic protocol combining medical-grade analysis with professional restorative therapies.',
+    sk_balayage:'Balayage', sk_blonde:'Blonding', sk_correction:'Color Correction', sk_olaplex:'Olaplex',
+    sk_texture:'Texture Cutting', sk_curly:'Curly Hair', sk_sass:'Sassoon Method', sk_dry:'Dry Cutting',
+    sk_trich:'Trichology', sk_scalp:'Scalp Analysis', sk_kera:'Keratin Tx', sk_loss:'Hair Loss',
+    loc_label:'Find Us', loc_title_1:'Plzeňská', loc_title_2:'535/50, Prague 5',
+    loc_address:'Plzeňská 535/50\nSmíchov, Prague 5\n150 00',
+    loc_hours_label:'Hours', loc_hours:'Mon–Fri: 9:00 – 20:00\nSaturday: 9:00 – 18:00\nSunday: By appointment',
+    loc_phone_label:'Phone', loc_email_label:'Email',
+    loc_transit_label:'Transit', loc_transit:'Tram 4, 7, 9 → Plzeňská stop\nMetro B → Anděl (8 min walk)',
+    footer_tagline:'Premium Hair & Color Studio · Prague',
+    footer_services:'Services', footer_studio:'Studio',
+    f_styling:'Hair Styling', f_color:'Coloring & Balayage', f_treat:'Treatments', f_keratin:'Keratin',
+    f_team:'Our Team', f_philosophy:'Philosophy', f_contact:'Contact', f_book2:'Book Online',
+    footer_copy:'© 2024 G;Salon Prague. All rights reserved.',
+  },
+  cz: {
+    loading: 'Načítání G;Salon',
+    book: 'Rezervovat',
+    hero_eyebrow: 'Praha · Prémiový Vlasový Salon',
+    hero_title_1: 'Vytvořte', hero_title_2: 'Svůj Signature', hero_title_3: 'Look',
+    hero_sub: 'Plzeňská 535/50, Praha 5',
+    scroll: 'Skrolovat',
+    services_label: 'Naše Služby',
+    services_title_1: 'Preciznost', services_title_2: '& Umění',
+    s1_label:'Styling', s1_tag:'Signature', s1_title:'Prémiový Střih\n& Styling',
+    s1_desc:'Každý střih začíná hloubkovou konzultací o vašem životním stylu, struktuře obličeje a textuře vlasů. Naši mistři používají precizní techniky od ostrých bobů po architektonické střihy.',
+    s1_price:'Od 1 200 Kč · ~50 min',
+    s2_label:'Barva', s2_title:'Technické\nBarvení',
+    s2_desc:'Balayage, melír, celobarvení a leštící ošetření provedené s evropskou precizností pomocí profesionálních pigmentů.',
+    s2_price:'Od 2 400 Kč',
+    s3_label:'Balayage', s3_title:'Balayage\n& Melír',
+    s3_desc:'Ručně malovaná dimension s plynulým dorůstáním. Zcela personalizované — žádné dva výsledky nejsou stejné.',
+    s3_price:'Od 3 200 Kč',
+    s4_label:'Terapeutika', s4_title:'Pokročilá Vlasová\nTerapeutika',
+    s4_desc:'Obnovte vitalitu klinickými protokoly. Digitální trichoskopie, Kerastase, Olaplex a rebalancování mikrobiomu pokožky hlavy.',
+    s4_price:'Od 1 800 Kč · ~75 min',
+    s5_label:'Keratin', s5_title:'Keratin &\nUhlazení',
+    s5_desc:'Brazilský, japonský a vlastní keratinové ošetření pro trvalou hladkost a lesk. Výsledky trvající 3–6 měsíců.',
+    s5_price:'Od 4 500 Kč',
+    s6_label:'Konzultace', s6_title:'Odborná\nKonzultace',
+    s6_desc:'Bezplatná 30minutová konzultace pro naplánování vaší transformace — cíle, historie, údržba a rozpočet.',
+    s6_price:'Zdarma',
+    spec_label:'Náš Tým', spec_title_1:'Mistři', spec_title_2:'svého řemesla',
+    sp1_name:'Alena Kovářová', sp1_role:'Zakladatelka · Master Koloristka',
+    sp1_bio:'S více než 14 lety zkušeností z Prahy, Paříže a Londýna založila Alena G;Salon, aby přinesla evropské standardy do Prahy. Certifikovaná L\'Oréal Professionnel Paris a Kerastase Master Educator.',
+    sp2_name:'Martin Šedivý', sp2_role:'Senior Stylista · Textury',
+    sp2_bio:'Martinův přístup ke střihu je architektonický. Absolvent Vidal Sassoon Academy v Londýně, dvakrát finalista Czech Hairdressing Awards, specialista na kudrnaté vlasy.',
+    sp3_name:'Veronika Blahová', sp3_role:'Tricholog · Expertka na ošetření',
+    sp3_bio:'Veronika spojuje klinickou vlasovou vědu s luxusní péčí. Certifikovaná trichologička s dermatologickým zázemím, autorka exkluzivního diagnostického protokolu G;Salon.',
+    sk_balayage:'Balayage', sk_blonde:'Zesvětlování', sk_correction:'Korekce barvy', sk_olaplex:'Olaplex',
+    sk_texture:'Střih textur', sk_curly:'Kudrnaté vlasy', sk_sass:'Sassoon metoda', sk_dry:'Suchý střih',
+    sk_trich:'Trichologie', sk_scalp:'Analýza pokožky', sk_kera:'Keratin', sk_loss:'Vypadávání vlasů',
+    loc_label:'Kde nás najdete', loc_title_1:'Plzeňská', loc_title_2:'535/50, Praha 5',
+    loc_address:'Plzeňská 535/50\nSmíchov, Praha 5\n150 00',
+    loc_hours_label:'Hodiny', loc_hours:'Po–Pá: 9:00 – 20:00\nSobota: 9:00 – 18:00\nNeděle: Po domluvě',
+    loc_phone_label:'Telefon', loc_email_label:'Email',
+    loc_transit_label:'MHD', loc_transit:'Tramvaj 4, 7, 9 → Plzeňská\nMetro B → Anděl (8 min pěšky)',
+    footer_tagline:'Prémiový Vlasový Salon · Praha',
+    footer_services:'Služby', footer_studio:'Studio',
+    f_styling:'Střih & Styling', f_color:'Barvení & Balayage', f_treat:'Ošetření', f_keratin:'Keratin',
+    f_team:'Náš tým', f_philosophy:'Filozofie', f_contact:'Kontakt', f_book2:'Rezervovat online',
+    footer_copy:'© 2024 G;Salon Praha. Všechna práva vyhrazena.',
+  },
+  ru: {
+    loading: 'Загрузка G;Salon',
+    book: 'Записаться',
+    hero_eyebrow: 'Прага · Премиальная Студия Волос',
+    hero_title_1: 'Создайте', hero_title_2: 'Свой Signature', hero_title_3: 'Образ',
+    hero_sub: 'Plzeňská 535/50, Прага 5',
+    scroll: 'Прокрутить',
+    services_label: 'Наши Услуги',
+    services_title_1: 'Точность', services_title_2: '& Мастерство',
+    s1_label:'Стайлинг', s1_tag:'Signature', s1_title:'Премиальные\nСтрижки & Укладки',
+    s1_desc:'Каждая стрижка начинается с глубокой консультации. Наши мастера применяют техники от острых бобов до архитектурных стрижек, создавая уникальный силуэт.',
+    s1_price:'От 1 200 CZK · ~50 мин',
+    s2_label:'Цвет', s2_title:'Технический\nКолоринг',
+    s2_desc:'Балаяж, мелирование, сплошное окрашивание и блеск-процедуры с европейской точностью.',
+    s2_price:'От 2 400 CZK',
+    s3_label:'Балаяж', s3_title:'Балаяж\n& Мелирование',
+    s3_desc:'Ручная роспись с естественным эффектом. Полностью персонализированный подход — каждый результат уникален.',
+    s3_price:'От 3 200 CZK',
+    s4_label:'Терапия', s4_title:'Расширенная Терапия\nВолос & Кожи Головы',
+    s4_desc:'Восстановление с клиническими протоколами. Цифровая трихоскопия, Kerastase, Olaplex и ребалансинг микробиома.',
+    s4_price:'От 1 800 CZK · ~75 мин',
+    s5_label:'Кератин', s5_title:'Кератиновое\nВыпрямление',
+    s5_desc:'Бразильский, японский и кастомный кератин для стойкой гладкости и блеска. Результат 3–6 месяцев.',
+    s5_price:'От 4 500 CZK',
+    s6_label:'Консультация', s6_title:'Экспертная\nКонсультация',
+    s6_desc:'Бесплатная 30-минутная консультация по планированию трансформации — цели, история, уход и бюджет.',
+    s6_price:'Бесплатно',
+    spec_label:'Наша Команда', spec_title_1:'Мастера', spec_title_2:'своего дела',
+    sp1_name:'Алена Коваржова', sp1_role:'Основатель · Мастер-Колорист',
+    sp1_bio:'Более 14 лет опыта в Праге, Париже и Лондоне. Алена основала G;Salon, чтобы принести европейские стандарты в Прагу. Сертифицирована L\'Oréal Professionnel Paris.',
+    sp2_name:'Мартин Шедивы', sp2_role:'Старший Стилист · Текстуры',
+    sp2_bio:'Архитектурный подход к стрижкам. Выпускник Vidal Sassoon Academy в Лондоне, финалист Czech Hairdressing Awards, специалист по кудрявым волосам.',
+    sp3_name:'Вероника Блахова', sp3_role:'Трихолог · Эксперт по уходу',
+    sp3_bio:'Вероника объединяет клиническую науку о волосах с люксовым уходом. Сертифицированный трихолог с дерматологическим образованием.',
+    sk_balayage:'Балаяж', sk_blonde:'Осветление', sk_correction:'Коррекция цвета', sk_olaplex:'Olaplex',
+    sk_texture:'Стрижка текстур', sk_curly:'Кудрявые волосы', sk_sass:'Метод Сассун', sk_dry:'Сухая стрижка',
+    sk_trich:'Трихология', sk_scalp:'Анализ кожи', sk_kera:'Кератин', sk_loss:'Выпадение волос',
+    loc_label:'Как нас найти', loc_title_1:'Plzeňská', loc_title_2:'535/50, Прага 5',
+    loc_address:'Plzeňská 535/50\nСмихов, Прага 5\n150 00',
+    loc_hours_label:'Часы', loc_hours:'Пн–Пт: 9:00 – 20:00\nСуббота: 9:00 – 18:00\nВоскресенье: По записи',
+    loc_phone_label:'Телефон', loc_email_label:'Email',
+    loc_transit_label:'Транспорт', loc_transit:'Трамвай 4, 7, 9 → Plzeňská\nМетро B → Anděl (8 мин пешком)',
+    footer_tagline:'Премиальная Студия Волос · Прага',
+    footer_services:'Услуги', footer_studio:'Студия',
+    f_styling:'Стрижки', f_color:'Окрашивание & Балаяж', f_treat:'Уход', f_keratin:'Кератин',
+    f_team:'Наша команда', f_philosophy:'Философия', f_contact:'Контакт', f_book2:'Записаться онлайн',
+    footer_copy:'© 2024 G;Salon Прага. Все права защищены.',
+  }
+};
+
+let currentLang = 'en';
+
+function applyLang(lang) {
+  currentLang = lang;
+  const d = dict[lang];
+  document.querySelectorAll('[data-key]').forEach(el => {
+    const key = el.getAttribute('data-key');
+    if (d[key] !== undefined) {
+      // preserve newlines
+      el.innerHTML = d[key].replace(/\n/g, '<br>');
+    }
+  });
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  // rebuild marquee
+  buildMarquee();
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+});
+
+// ════════════════════════════════════════════
+// MARQUEE
+// ════════════════════════════════════════════
+function buildMarquee() {
+  const items = {
+    en: ['PREMIUM HAIR STYLING','TECHNICAL COLORING','BALAYAGE SPECIALISTS','KERASTASE CERTIFIED','OLAPLEX PARTNERS','PRAGUE SMÍCHOV','COLOR MATRIX','G;SALON PRAGUE'],
+    cz: ['PRÉMIOVÝ STYLING','TECHNICKÉ BARVENÍ','BALAYAGE SPECIALISTÉ','KERASTASE CERTIFIKÁT','OLAPLEX PARTNEŘI','PRAHA SMÍCHOV','COLOR MATRIX','G;SALON PRAHA'],
+    ru: ['ПРЕМИАЛЬНЫЙ СТАЙЛИНГ','ТЕХНИЧЕСКИЙ КОЛОРИНГ','БАЛАЯЖ МАСТЕРА','KERASTASE СЕРТИФИКАТ','OLAPLEX ПАРТНЁРЫ','ПРАГА СМИХОВ','COLOR MATRIX','G;SALON ПРАГА'],
+  };
+  const list = items[currentLang] || items.en;
+  const el = document.getElementById('marquee-inner');
+  const doubled = [...list, ...list];
+  el.innerHTML = doubled.map(t => `<div class="marquee-item">${t}<span class="marquee-dot"></span></div>`).join('');
+}
+buildMarquee();
+
+// ════════════════════════════════════════════
+// THREE.JS SETUP
+// ════════════════════════════════════════════
+(function() {
+  const container = document.getElementById('canvas-container');
+
+  // Scene
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x080808);
+
+  // Camera
+  const camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(0, 0, 4.6);
+
+  // Renderer
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  container.appendChild(renderer.domElement);
+
+  // Lights
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+  scene.add(ambientLight);
+
+  const dirLight1 = new THREE.DirectionalLight(0xffffff, 5.0);
+  dirLight1.position.set(6, 6, 6);
+  scene.add(dirLight1);
+
+  const dirLight2 = new THREE.DirectionalLight(0xffb6c1, 3.5);
+  dirLight2.position.set(-6, -2, -4);
+  scene.add(dirLight2);
+
+  const dirLight3 = new THREE.DirectionalLight(0x88ccff, 2.0);
+  dirLight3.position.set(0, -6, 4);
+  scene.add(dirLight3);
+
+  // Knot Geometry
+  const geometry = new THREE.TorusKnotGeometry(1.2, 0.32, 180, 24, 2, 3);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x111111,
+    metalness: 1.0,
+    roughness: 0.03
+  });
+  const knot = new THREE.Mesh(geometry, material);
+  knot.position.set(0, 0, 0);
+  scene.add(knot);
+
+  // Particles
+  const particleCount = 2600;
+  const positions = new Float32Array(particleCount * 3);
+  const particleBasePositions = new Float32Array(particleCount * 3);
+  const particleVelocities = new Float32Array(particleCount * 3);
+
+  for (let i = 0; i < particleCount; i++) {
+    const r = 3.5 + Math.random() * 3.0;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const x = r * Math.sin(phi) * Math.cos(theta);
+    const y = r * Math.sin(phi) * Math.sin(theta);
+    const z = r * Math.cos(phi);
+    positions[i*3] = x; positions[i*3+1] = y; positions[i*3+2] = z;
+    particleBasePositions[i*3] = x; particleBasePositions[i*3+1] = y; particleBasePositions[i*3+2] = z;
+    particleVelocities[i*3] = (Math.random()-0.5)*0.01;
+    particleVelocities[i*3+1] = (Math.random()-0.5)*0.01;
+    particleVelocities[i*3+2] = (Math.random()-0.5)*0.01;
+  }
+
+  const particleGeo = new THREE.BufferGeometry();
+  particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const particleMat = new THREE.PointsMaterial({
+    color: 0xff4f80,
+    size: 0.025,
+    transparent: true,
+    opacity: 0.55,
+    sizeAttenuation: true
+  });
+  const particles = new THREE.Points(particleGeo, particleMat);
+  scene.add(particles);
+
+  // Mouse tracking
+  let mouseX = 0, mouseY = 0;
+  let targetRotX = 0, targetRotY = 0;
+  document.addEventListener('mousemove', e => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  // Scroll state
+  let scrollProgress = 0;
+  let wireframeActive = false;
+  let particlesDiagonal = false;
+
+  // GSAP ScrollTrigger
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Camera zoom on scroll
+  ScrollTrigger.create({
+    trigger: '#services',
+    start: 'top 80%',
+    end: 'top 0%',
+    scrub: 1.5,
+    onUpdate: (self) => {
+      scrollProgress = self.progress;
+      const z = THREE.MathUtils.lerp(4.6, 2.2, self.progress);
+      gsap.to(camera.position, { z: z, duration: 0.3, ease: 'power2.out' });
+    }
+  });
+
+  // Services wireframe trigger
+  ScrollTrigger.create({
+    trigger: '#services',
+    start: 'top 40%',
+    end: 'bottom 60%',
+    onEnter: () => {
+      material.wireframe = true;
+      wireframeActive = true;
+      particlesDiagonal = true;
+      showPulseSignals(true);
+      particleMat.color.set(0xff4f80);
+      particleMat.size = 0.04;
+    },
+    onLeave: () => {
+      material.wireframe = false;
+      wireframeActive = false;
+      particlesDiagonal = false;
+      showPulseSignals(false);
+      particleMat.color.set(0xff4f80);
+      particleMat.size = 0.025;
+    },
+    onEnterBack: () => {
+      material.wireframe = true;
+      wireframeActive = true;
+      particlesDiagonal = true;
+      showPulseSignals(true);
+    },
+    onLeaveBack: () => {
+      material.wireframe = false;
+      wireframeActive = false;
+      particlesDiagonal = false;
+      showPulseSignals(false);
+    }
+  });
+
+  // Specialists: bring camera back
+  ScrollTrigger.create({
+    trigger: '#specialists',
+    start: 'top 60%',
+    onEnter: () => {
+      gsap.to(camera.position, { z: 4.6, duration: 1.2, ease: 'power3.inOut' });
+    }
+  });
+
+  // Clock
+  const clock = new THREE.Clock();
+  let diagonalTime = 0;
+
+  // Animate loop
+  function animate() {
+    requestAnimationFrame(animate);
+    const elapsed = clock.getElapsedTime();
+    const delta = clock.getDelta ? 0.016 : 0.016;
+
+    // Mouse-driven rotation with dampening
+    targetRotY = THREE.MathUtils.lerp(targetRotY, mouseX * 0.4, 0.05);
+    targetRotX = THREE.MathUtils.lerp(targetRotX, mouseY * 0.3, 0.05);
+
+    knot.rotation.y = THREE.MathUtils.lerp(knot.rotation.y, targetRotY + elapsed * 0.12, 0.05);
+    knot.rotation.x = THREE.MathUtils.lerp(knot.rotation.x, targetRotX, 0.05);
+    knot.rotation.z += 0.003;
+
+    // Particle animation
+    const posArr = particleGeo.attributes.position.array;
+    if (particlesDiagonal) {
+      diagonalTime += 0.012;
+      for (let i = 0; i < particleCount; i++) {
+        // Diagonal shoot: up-right 45deg
+        posArr[i*3]   += 0.025; // x right
+        posArr[i*3+1] += 0.025; // y up
+        // Wrap around viewport bounds
+        if (posArr[i*3] > 8) posArr[i*3] = particleBasePositions[i*3] - 8;
+        if (posArr[i*3+1] > 8) posArr[i*3+1] = particleBasePositions[i*3+1] - 8;
+      }
+    } else {
+      // Gentle orbital drift back to base
+      for (let i = 0; i < particleCount; i++) {
+        posArr[i*3]   = THREE.MathUtils.lerp(posArr[i*3],   particleBasePositions[i*3],   0.04);
+        posArr[i*3+1] = THREE.MathUtils.lerp(posArr[i*3+1], particleBasePositions[i*3+1], 0.04);
+        posArr[i*3+2] = THREE.MathUtils.lerp(posArr[i*3+2], particleBasePositions[i*3+2], 0.04);
+        // Tiny ambient drift
+        posArr[i*3]   += Math.sin(elapsed * 0.5 + i * 0.3) * 0.001;
+        posArr[i*3+1] += Math.cos(elapsed * 0.4 + i * 0.2) * 0.001;
+      }
+    }
+    particleGeo.attributes.position.needsUpdate = true;
+
+    // Pulsing particle opacity
+    particleMat.opacity = 0.45 + Math.sin(elapsed * 1.2) * 0.1;
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // Resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // Expose knot/material for external use
+  window._gknot = { knot, material, camera };
+})();
+
+// ════════════════════════════════════════════
+// PULSE SIGNALS (Diagonal data text)
+// ════════════════════════════════════════════
+const pulseWords = ['PREMIUM HAIR', 'COLOR MATRIX', 'HAIR TEXTURE', 'G;SALON PRAGUE', 'BALAYAGE', 'TECHNICAL COLOR', 'PLZEŇSKÁ 535', 'CHROME FINISH'];
+let pulseInterval = null;
+
+function createPulseSignal() {
+  const container = document.getElementById('pulse-container');
+  const el = document.createElement('div');
+  el.classList.add('pulse-signal');
+  const word = pulseWords[Math.floor(Math.random() * pulseWords.length)];
+  el.textContent = word;
+  // Start from random bottom-left area
+  const startX = Math.random() * 50;
+  const startY = 60 + Math.random() * 40;
+  el.style.left = startX + 'vw';
+  el.style.top = startY + 'vh';
+  container.appendChild(el);
+
+  gsap.to(el, {
+    x: '35vw',
+    y: '-35vh',
+    opacity: 1,
+    duration: 0,
+    ease: 'none'
+  });
+  gsap.fromTo(el,
+    { opacity: 0, x: 0, y: 0 },
+    {
+      opacity: 0.7,
+      x: '30vw',
+      y: '-30vh',
+      duration: 2.2,
+      ease: 'power1.in',
+      onComplete: () => {
+        gsap.to(el, { opacity: 0, duration: 0.4, onComplete: () => el.remove() });
+      }
+    }
+  );
+}
+
+function showPulseSignals(active) {
+  const container = document.getElementById('pulse-container');
+  if (active) {
+    container.style.opacity = '1';
+    pulseInterval = setInterval(createPulseSignal, 380);
+  } else {
+    container.style.opacity = '0';
+    if (pulseInterval) clearInterval(pulseInterval);
+    pulseInterval = null;
+  }
+}
+
+// ════════════════════════════════════════════
+// BENTO TILT (Mouse tracking)
+// ════════════════════════════════════════════
+document.querySelectorAll('[data-tilt]').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / (rect.width / 2);
+    const dy = (e.clientY - cy) / (rect.height / 2);
+    const rx = -dy * 6;
+    const ry = dx * 6;
+    card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.01)`;
+    card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+    card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale(1)';
+  });
+});
+
+// ════════════════════════════════════════════
+// GSAP SCROLL ANIMATIONS
+// ════════════════════════════════════════════
+gsap.registerPlugin(ScrollTrigger);
+
+// Hero entrance already done via CSS keyframes
+
+// Section headings fade up
+document.querySelectorAll('.section-heading, .section-label').forEach(el => {
+  gsap.from(el, {
+    opacity: 0,
+    y: 40,
+    duration: 1.2,
+    ease: 'power3.out',
+    scrollTrigger: {
+      trigger: el,
+      start: 'top 85%',
+    }
+  });
+});
+
+// Bento cards staggered
+gsap.from('.bento-card', {
+  opacity: 0,
+  y: 60,
+  duration: 1.0,
+  stagger: 0.1,
+  ease: 'power3.out',
+  scrollTrigger: {
+    trigger: '.bento-grid',
+    start: 'top 80%',
+  }
+});
+
+// Specialist cards staggered
+gsap.from('.specialist-card', {
+  opacity: 0,
+  y: 50,
+  duration: 1.0,
+  stagger: 0.15,
+  ease: 'power3.out',
+  scrollTrigger: {
+    trigger: '.specialists-grid',
+    start: 'top 80%',
+  }
+});
+
+// Location fade
+gsap.from('.location-grid', {
+  opacity: 0,
+  y: 40,
+  duration: 1.2,
+  ease: 'power3.out',
+  scrollTrigger: {
+    trigger: '.location-grid',
+    start: 'top 85%',
+  }
+});
+
+// Diagonal bento sweep out on scroll past
+gsap.to('#bento-grid', {
+  x: '0vw',
+  y: '0vh',
+  ease: 'power2.inOut',
+  scrollTrigger: {
+    trigger: '#services',
+    start: 'bottom 80%',
+    end: 'bottom 10%',
+    scrub: 1.5,
+    onUpdate: (self) => {
+      const prog = self.progress;
+      const xVal = prog * 60;
+      const yVal = -prog * 60;
+      document.getElementById('bento-grid').style.transform =
+        `translate(${xVal}vw, ${yVal}vh) scale(${1 - prog * 0.1})`;
+      document.getElementById('bento-grid').style.opacity = 1 - prog * 0.8;
+    },
+    onLeaveBack: () => {
+      document.getElementById('bento-grid').style.transform = '';
+      document.getElementById('bento-grid').style.opacity = '';
+    }
+  }
+});
+
+// ════════════════════════════════════════════
+// INTRO OVERLAY DISMISS
+// ════════════════════════════════════════════
+setTimeout(() => {
+  const overlay = document.getElementById('intro-overlay');
+  gsap.to(overlay, {
+    opacity: 0,
+    duration: 0.6,
+    delay: 0.2,
+    ease: 'power2.out',
+    onComplete: () => {
+      overlay.style.display = 'none';
+    }
+  });
+}, 2000);
+
+// ════════════════════════════════════════════
+// INITIAL LANG APPLY
+// ════════════════════════════════════════════
+applyLang('en');
+</script>
+</body>
+</html>
